@@ -1,8 +1,10 @@
-import { status } from 'elysia'
+import { ElysiaCustomStatusResponse, redirect, status } from 'elysia'
 import type { LinkModel } from './model'
 import { nanoid } from 'nanoid'
 import { db } from '../../database'
 import { linkTable } from '../../database/schema'
+import { eq, sql } from 'drizzle-orm'
+
 export async function createLink({ long_url }: LinkModel.createLinkBody)
 {
     try {
@@ -32,7 +34,33 @@ export async function createLink({ long_url }: LinkModel.createLinkBody)
     } catch (err) {
         if (err instanceof Error && 'status' in err) throw err
 
+         if(err instanceof ElysiaCustomStatusResponse){
+            throw status(err.code, err.response)
+        }
 
+        throw status(500, 'Internal server error')
+    }
+}
+
+export async function redirectLink({short_url}: LinkModel.redirectLinkBody) {
+    try {
+        const [foundURL] = await db.select({long_url:linkTable.longURL}).from(linkTable).where(eq(linkTable.shortURL, short_url))
+
+        if(!foundURL || !foundURL.long_url) throw status(404, "Not Found" satisfies LinkModel.redirectURLNotFound)
+        
+        await db.update(linkTable).set(
+            {clickCount: sql`${linkTable.clickCount} + 1`}
+        ).where(eq(linkTable.shortURL, short_url))
+        
+        return foundURL.long_url
+        
+            
+    } catch (error) {
+        if (error instanceof Error && 'status' in error) throw error
+        
+        if(error instanceof ElysiaCustomStatusResponse){
+            throw status(error.code, error.response)
+        }
         throw status(500, 'Internal server error')
     }
 }

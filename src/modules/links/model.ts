@@ -17,4 +17,15 @@ export namespace LinkModel {
 
     export const createLinkInvalid = t.Literal("Invalid url")
     export type createLinkInvalid = typeof createLinkInvalid.static
+
+
+    export const redirectLinkBody = t.Object({
+        short_url: t.String({maxLength: 12})
+    })
+
+    export type redirectLinkBody = typeof redirectLinkBody.static
+
+    export const redirectURLNotFound = t.Literal("Not Found")
+    export type redirectURLNotFound = typeof redirectURLNotFound.static
+
 }   

@@ -1,9 +1,8 @@
-import { Elysia, status, t } from "elysia"
+import { Elysia, redirect, status, t } from "elysia"
 import { LinkModel } from './model'
-import { createLink } from "./service"
+import { createLink, redirectLink } from "./service"
 
-export const link = new Elysia({ prefix: '/link' })
-
+export const link = new Elysia()
     .post(
         '/',
         async ({ body }) => {
@@ -28,3 +27,14 @@ export const link = new Elysia({ prefix: '/link' })
             }
         }
     )
+    .get('/:short_url',
+        async({params: {short_url}})=>{
+            console.log(short_url)
+           const formattedString = short_url.trim()
+            if(!formattedString) throw status(400, "Bad Request")
+
+            const FoundURL = await redirectLink({short_url})
+            return redirect(FoundURL)
+        } 
+    )
+
