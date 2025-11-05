@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import { openapi, fromTypes } from '@elysiajs/openapi'
 import { link } from "./modules/links";
 
-const app = new Elysia()
+const app = new Elysia({prefix: '/api'})
 
 app.use(openapi({
   references: fromTypes()
