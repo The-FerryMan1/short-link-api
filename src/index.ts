@@ -8,8 +8,6 @@ app.use(openapi({
   references: fromTypes()
 }))
 
-
-
 app.use(link)
 
 app.get('/me/:id', ({ params: { id } }) => {

@@ -12,7 +12,6 @@ export async function createLink({ long_url }: LinkModel.createLinkBody)
         const validURl = await fetch(long_url, {
             method: 'GET'
         })
-
         if (!validURl.ok) {
             throw status(
                 404,
